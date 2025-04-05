@@ -1,3 +1,7 @@
 streamlit
 pdfplumber
 python-docx
+spacy
+nltk
+sentence-transformers
+openai
