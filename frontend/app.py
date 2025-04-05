@@ -83,8 +83,30 @@ if uploaded_file:
                         faq_output = generate_faqs_from_contract(clauses, num_questions=10)
 
                     # Display Q/A pairs
-                    faq_pairs = re.findall(r"(Q\d+:.*?)(?=(Q\d+:|$))", faq_output, re.DOTALL)
-                    for q_and_a, _ in faq_pairs:
-                        st.markdown(q_and_a.strip())
+                    faq_lines = faq_output.strip().split("\n")
+                    questions_and_answers = []
+                    current_q, current_a = "", ""
+
+                    for line in faq_lines:
+                        if line.strip().startswith("Q"):
+                            if current_q and current_a:
+                                questions_and_answers.append((current_q.strip(), current_a.strip()))
+                                current_a = ""
+                            current_q = line
+                        elif line.strip().startswith("A"):
+                            current_a = line
+                        else:
+                            if current_a:
+                                current_a += " " + line  # append long answers
+
+                    # Add the last pair
+                    if current_q and current_a:
+                        questions_and_answers.append((current_q.strip(), current_a.strip()))
+
+                    # Display each question and answer
+                    for i, (q, a) in enumerate(questions_and_answers, 1):
+                        with st.expander(f"{q}"):
+                            st.markdown(f"**{a}**")
 
 
+# --- Footer ---
